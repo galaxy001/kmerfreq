@@ -42,22 +42,4 @@ kvec_pchar * reading_file_list(char * file_list) {
 	free(line);
 	fclose(fp);
 	return &reads_files;
-	/*
-	ifstream infile ( file_list.c_str() );
-	if ( ! infile )
-	{	cerr << "fail to open input file" << file_list << endl;
-	}
-
-	string line_str;
-	while ( getline( infile, line_str, '\n' ) )
-	{	string file_name;
-		for(int i=0; i<line_str.size();i++)
-		{	if(line_str[i] != ' ' && line_str[i] != '\t' && line_str[i] != '\n')
-			{	file_name.push_back(line_str[i]);
-			}
-		}
-		if (file_name.size())
-		{	files.push_back(file_name);
-		}
-	}*/
 }
