@@ -2,7 +2,7 @@ CC = gcc
 CXX = g++
 CFLAGS = -std=gnu11 -Wall -pedantic -pipe -march=core2 -mtune=generic -I/usr/local/include
 CXXFLAGS = -std=gnu++14 -Wall -pedantic -pipe -march=core2 -mtune=generic -I/usr/local/include
-LDFLAGS = -L/usr/local/lib #-lhts #-lpthread -pthread
+LDFLAGS = -L/usr/local/lib -lz #-lhts #-lpthread -pthread
 OPT = -O2
 
 exefiles = kmerfreq
@@ -22,7 +22,7 @@ OBJDIR = ./objects/
 
 #MAKEARG = $(CFLAGS) $(OPT)
 
-cobjects = ./objects/seqKmer.o
+cobjects = ./objects/seqKmer.o ./objects/seqRead.o
 c99objects = 
 mainobjects = ./objects/main.o
 objects = $(cobjects) $(c99objects)

@@ -1,0 +1,20 @@
+@test1/1 cmt1
+ATCGATCAGGTCA
++
+aaaaaabbaaaaa
+
+@test2/1 empty seq test
+
++
+
+
+@test3/1
+CTCGATCGGGTCA
++
+caaaaabbaaaaa
+
+@test4/1
+GTCGATCGGGTCA
++
+daaaaabbaaaaa
+

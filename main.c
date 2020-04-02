@@ -6,6 +6,7 @@
 
 #include "klib/ketopt.h"
 #include "seqKmer.h"
+#include "seqRead.h"
 #include "Galaxy.h"
 
 //global varaibles for commond-line options
@@ -110,8 +111,8 @@ int main(int argc, char *argv[]) {
 	
 	
 	
-	clock_t time_start, time_end;
-	time_start = clock();
+	//clock_t time_start, time_end;
+	//time_start = clock();
 
 	char * reads_file_list = argv[opt.ind++];
 	if (!prefix) prefix = reads_file_list;
@@ -126,7 +127,9 @@ int main(int argc, char *argv[]) {
 	
 	kvec_pchar * reads_files = reading_file_list(reads_file_list);
 	for (int i=0;i<kv_size(*reads_files);i++) {
-		printf("%d: %s\n",i,kv_A(*reads_files,i));
+		char * thisFQname = kv_A(*reads_files,i);
+		printf("%d: %s\n",i,thisFQname);
+		readFQgz(thisFQname);
 	}
 	
 	return 0;
