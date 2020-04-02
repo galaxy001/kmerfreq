@@ -2,10 +2,13 @@ CC = gcc
 CXX = g++
 CFLAGS = -std=gnu11 -Wall -pedantic -pipe -march=core2 -mtune=generic -I/usr/local/include
 CXXFLAGS = -std=gnu++14 -Wall -pedantic -pipe -march=core2 -mtune=generic -I/usr/local/include
-LDFLAGS = -L/usr/local/lib -lz #-lhts #-lpthread -pthread
+LDFLAGS = -L/usr/local/lib -lz #-lhts
 OPT = -O2
 
 exefiles = kmerfreq
+
+CFLAGS += -pthread -D_REENTRANT -D_THREAD_SAFE
+CFLAGS += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wshadow -Wpointer-arith -Wsign-compare -Wcast-qual
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -22,7 +25,7 @@ OBJDIR = ./objects/
 
 #MAKEARG = $(CFLAGS) $(OPT)
 
-cobjects = ./objects/seqKmer.o ./objects/seqRead.o
+cobjects = ./objects/seqKmer.o ./objects/seqRead.o ./objects/lfqueue.o
 c99objects = 
 mainobjects = ./objects/main.o
 objects = $(cobjects) $(c99objects)

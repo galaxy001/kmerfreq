@@ -1,6 +1,7 @@
 #include <zlib.h>
 #include <stdio.h>
 #include "seqRead.h"
+#include "lfqueue.h"
 
 KSEQ_INIT(gzFile, gzread)
 

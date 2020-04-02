@@ -50,7 +50,7 @@ uint64_t bufBlockSize = 8*1024*1024; //8M kmer species space number for each com
 
 
 
-static void usage() {
+static void usage(void) {
 	ERRprintf("\n\033[1m"
 "Function introduction:\033[0m\n"
 "kmerfreq count K-mer (with size K) frequency from the input sequence data, typically sequencing reads data, and reference genome data is also applicable. The forward and reverse strand of a k-mer are taken as the same k-mer, and only the kmer strand with smaller bit-value is used to represent the kmer. It adopts a 16-bit integer with max value 65535 to store the frequency value of a unique K-mer, and any K-mer with frequency larger than 65535 will be recorded as 65535. The program store all kmer frequency values in a 4^K size array of 16-bit integer (2 bytes), using the k-mer bit-value as index, so the total memory usage is 2* 4^K bytes. For K-mer size 15, 16, 17, 18, 19, it will consume constant 2G, 8G 32G 128G 512G memory, respectively. kmerfreq works in a highly simple and parallel style, to achieve as fast speed as possible.\n"
@@ -104,8 +104,8 @@ int main(int argc, char *argv[]) {
 	}
 	printf("KmerSize:%i Input_file_format:%i threadNum:%i BufferNum:%i prefix:%s Whether_output_kmerfreq:%i Output_kmerfreq_cutoff:%i Whether_output_memory:%i Low_high_freq_cutoff:%i\n",KmerSize,Input_file_format,threadNum,BufferNum,prefix,Whether_output_kmerfreq,Output_kmerfreq_cutoff,Whether_output_memory,Low_high_freq_cutoff);
 	printf("Non-option arguments:");
-	int i;
-	for (i = opt.ind; i < argc; ++i)
+
+	for (int i = opt.ind; i < argc; ++i)
 		printf(" %s", argv[i]);
 	putchar('\n');
 	
@@ -126,9 +126,9 @@ int main(int argc, char *argv[]) {
 	KmerRCOrVal[0] = KmerRCOrVal[1] + KmerRCOrVal[2];
 	
 	kvec_pchar * reads_files = reading_file_list(reads_file_list);
-	for (int i=0;i<kv_size(*reads_files);i++) {
+	for (size_t i=0;i<kv_size(*reads_files);i++) {
 		char * thisFQname = kv_A(*reads_files,i);
-		printf("%d: %s\n",i,thisFQname);
+		printf("%ld: %s\n",i,thisFQname);
 		readFQgz(thisFQname);
 	}
 	
