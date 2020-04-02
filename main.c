@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "klib/ketopt.h"
+#include "seqKmer.h"
 #include "Galaxy.h"
 
 //global varaibles for commond-line options
@@ -117,13 +118,16 @@ int main(int argc, char *argv[]) {
 	printf("prefix:%s reads_file_list:%s\n",prefix,reads_file_list);
 
 	//used in generating a new kmer bit data from previous kmer bit data
-	KmerHeadMaskVal = pow(2, KmerSize*2) - 1;	
+	KmerHeadMaskVal = pow_integer(2, KmerSize*2) - 1;	
 	KmerRCOrVal[3] = 0;
-	KmerRCOrVal[1] = pow(2,KmerSize*2-1);
-	KmerRCOrVal[2] = pow(2,KmerSize*2-1-1);;
+	KmerRCOrVal[1] = pow_integer(2,KmerSize*2-1);
+	KmerRCOrVal[2] = pow_integer(2,KmerSize*2-1-1);;
 	KmerRCOrVal[0] = KmerRCOrVal[1] + KmerRCOrVal[2];
 	
-	
+	kvec_pchar * reads_files = reading_file_list(reads_file_list);
+	for (int i=0;i<kv_size(*reads_files);i++) {
+		printf("%d: %s\n",i,kv_A(*reads_files,i));
+	}
 	
 	return 0;
 }

@@ -1,53 +1,71 @@
-CC=gcc
+CC = gcc
+CXX = g++
+CFLAGS = -std=gnu11 -Wall -pedantic -pipe -march=core2 -mtune=generic -I/usr/local/include
+CXXFLAGS = -std=gnu++14 -Wall -pedantic -pipe -march=core2 -mtune=generic -I/usr/local/include
+LDFLAGS = -L/usr/local/lib #-lhts #-lpthread -pthread
+OPT = -O2
 
-# learned from http://sourceforge.net/projects/gcmakefile/
-# The options used in linking as well as in any direct use of ld.
-LDLIB     = #-lpthread
+exefiles = kmerfreq
 
-#LDFLAGS   = -Wl,-O1 -Wl,--sort-common -Wl,--enable-new-dtags -Wl,--hash-style=both $(LDLIB)
-LDFLAGS = $(LDLIB)
-# The directories in which source files reside.
-# If not specified, only the current directory will be serached.
-SRCDIRS   =
-
-## Implicit Section: change the following only when necessary.
-##==========================================================================
-
-# The source file types (headers excluded).
-# .c indicates C source files, and others C++ ones.
-SRCEXTS = .c# .C .cc .cpp .CPP .c++ .cxx .cp
-
-OLevel= -O3
-CFLAGS  = -pipe -march=core2 -mtune=generic -std=gnu99
-WARNFLAGS =  -Wfloat-equal -Wall \
-#-pedantic
-
-ASMFLAGS = -S -fverbose-asm -g -masm=intel
-
-ifeq ($(SRCDIRS),)
-  SRCDIRS = .
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	#CC = gcc-9
+	#CXX = g++-9
+	LDFLAGS += #-largp #-D_THREAD_SAFE -static-libgcc -static-libstdc++
+endif
+ifeq ($(UNAME_S),Linux)
+	LDFLAGS += #-static -lbz2 -lm -lpthread -lz -llzma -pthread
+	# https://github.com/samtools/htslib/issues/259 , thus no static !
 endif
 
-SOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
+OBJDIR = ./objects/
 
-.PHONY: all clean
+#MAKEARG = $(CFLAGS) $(OPT)
 
-all: $(SOURCES:.c=)
-#$(patsubst $.c,%,$(SOURCES))
-	@echo [@gcc $(CFLAGS) $(OLevel) $(LDFLAGS)]
-#@echo [$(SOURCES)] to [$(SOURCES:.c=)].
+cobjects = ./objects/seqKmer.o
+c99objects = 
+mainobjects = ./objects/main.o
+objects = $(cobjects) $(c99objects)
 
-%: %.c
-	@mkdir -p asm
-	@echo  [$(OLevel)]:${<} -\> ${@}
-	$(CC) $(WARNFLAGS) $(CFLAGS) $(OLevel) $(LDFLAGS) -o $@ $<
-	$(CC) $(CFLAGS) $(OLevel) $(LDFLAGS) $(ASMFLAGS) -o ./asm/$@.s $<
-	#-as -alhnd -o /dev/null ./asm/$@.s > ./asm/$@.asm
-#@gcc $(CFLAGS) $(OLevel) $(LDFLAGS) $(ASMFLAGS) -o - $< | as -alhnd > ./asm/$@.asm
-	#@rm ./asm/$@.s
+all: $(objects) $(exefiles)
 
-duptc: override LDLIB += -lm
+$(exefiles): $(objects) $(cxxobjects) $(mainobjects)
+	#$(CXX) $(CXXFLAGS) $(OPT) $(LDFLAGS) -o $(exefiles) $(mainobjects) $(objects)
+	$(CC) $(CFLAGS) $(OPT) $(LDFLAGS) -o $(exefiles) $(mainobjects) $(objects)
 
+$(mainobjects): $(OBJDIR)%.o: %.c tmpdir
+	#$(CXX) $(CXXFLAGS) $(OPT) -c $< -o $@
+	$(CC) $(CFLAGS) $(OPT) -c $< -o $@
+
+$(cobjects): $(OBJDIR)%.o: %.c tmpdir
+	$(CC) $(CFLAGS) $(OPT) -c $< -o $@
+
+$(cxxobjects): $(OBJDIR)%.o: %.c tmpdir
+	$(CXX) $(CXXFLAGS) $(OPT) -c $< -o $@
+
+$(c99objects): $(OBJDIR)%.o: %.c tmpdir
+	$(CC) $(CFLAGS) $(OPT) -c $< -o $@
+
+debug: override OPT := -O -D DEBUG -g
+debug: all
+
+tmpdir:
+	-mkdir ./objects
+
+test: override OPT := -O -D DEBUG -g
+test: $(exefiles)
+	valgrind --leak-check=yes ./$(exefiles) -p g ToGrep.ini
+run: $(exefiles)
+	valgrind --leak-check=yes ./$(exefiles) -p g ToGrep.ini
+
+pp:
+	$(CC) -E main.c | indent > mm.c
+	-mate mm.c 
+sign: $(exefiles)
+	codesign -s "Mac Developer" -v $(exefiles)
+	codesign -d -v $(exefiles)
+
+.PHONY : clean
 clean:
-	-rm $(SOURCES:.c=)
-	-rm -frv ./asm
+	-rm $(exefiles) $(mainobjects) $(objects)
+	@mkdir -p $(OBJDIR)
