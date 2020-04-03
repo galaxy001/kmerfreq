@@ -5,3 +5,8 @@ kmerfreq count K-mer (with size K) frequency from the input sequence data, typic
 
 * [klib](https://github.com/attractivechaos/klib)
 * [lfqueue](https://github.com/Taymindis/lfqueue)
+
+## etc
+
+For Valgrind on macOS Mojave (tested on 10.14.6), refer to <https://github.com/sowson/valgrind>. 
+To install it, use `brew install --HEAD https://raw.githubusercontent.com/sowson/valgrind/master/valgrind.rb`.
