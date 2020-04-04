@@ -131,6 +131,7 @@ int main(int argc, char *argv[]) {
 		printf("%ld: %s\n",i,thisFQname);
 		readFQgz(thisFQname);
 	}
+	testit();
 	
 	return 0;
 }
