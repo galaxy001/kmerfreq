@@ -56,10 +56,11 @@ tmpdir:
 	-mkdir ./objects
 
 test: override OPT := -O -D DEBUG -g
+ValgridnOPT := --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no
 test: $(exefiles)
-	valgrind --leak-check=yes ./$(exefiles) -k 17 -t 10 -p test0 reads_files.list
+	valgrind $(ValgridnOPT) ./$(exefiles) -k 17 -t 10 -p test0 reads_files.list
 run: $(exefiles)
-	valgrind --leak-check=yes ./$(exefiles) -k 17 -t 10 -p test0 reads_files.list
+	valgrind $(ValgridnOPT) ./$(exefiles) -k 17 -t 10 -p test0 reads_files.list
 
 pp:
 	$(CC) -E main.c | indent > mm.c

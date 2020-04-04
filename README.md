@@ -8,5 +8,5 @@ kmerfreq count K-mer (with size K) frequency from the input sequence data, typic
 
 ## etc
 
-For Valgrind on macOS Mojave (tested on 10.14.6), refer to <https://github.com/sowson/valgrind>. 
-To install it, use `brew install --HEAD https://raw.githubusercontent.com/sowson/valgrind/master/valgrind.rb`.
+For Valgrind on macOS Mojave (tested on 10.14.6), refer to <https://stackoverflow.com/questions/52732036/how-to-install-valgrind-on-macos-mojave10-14-with-homebrew>. 
+To install it, use `brew install --HEAD https://raw.githubusercontent.com/sowson/valgrind/master/valgrind.rb` or `brew install --HEAD https://raw.githubusercontent.com/LouisBrunner/valgrind-macos/master/valgrind.rb`.
