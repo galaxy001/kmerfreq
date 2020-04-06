@@ -61,6 +61,19 @@ void* readaFQgz(void *arg) {
 	return 0;
 }
 
+void*  countaFromIFQ(void *arg) {
+	uint16_t * KmerFreqArray = (uint16_t *) arg;
+	while (1) {	// NEEDs a signal.
+		char * seqstr = lfqueue_deq_must(IFQseq);	/*Dequeue*/
+		printf("%s\n", seqstr);
+		free(seqstr);
+	}
+	//__sync_add_and_fetch(&nthreads_exited, 1);
+	return 0;
+}
+
+
+
 typedef void (*test_function)(pthread_t*);
 void one_enq_and_multi_deq_must(pthread_t *threads);
 void*  worker_s(void *);
@@ -68,7 +81,7 @@ void*  worker_c_must(void *);
 void running_test(test_function testfn);
 
 struct timeval  tv1, tv2;
-#define total_put 50000
+#define total_put 5000
 #define total_running_loop 10
 int nthreads = 4;
 int one_thread = 1;
