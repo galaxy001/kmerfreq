@@ -64,7 +64,7 @@ static void usage(void) {
 "\n\n"
 "kmerfreq  [options] <reads_files.lib>\n"
 "   Author Wei Fan, fanweiagis@126.com\n"
-"   Version 4.0\n"
+"   Version 5.0\n"
 "   -k <int>  kmer size, recommand value 13 to 19, default=17\n"
 "   -f <int>  input file format: 1: fq|gz(one-line), 2: fa|gz(one-line), default=1\n"
 "   -p <str>  output file prefix, default=reads_files.lib\n"
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
 	KmerRCOrVal[2] = pow_integer(2,KmerSize*2-1-1);;
 	KmerRCOrVal[0] = KmerRCOrVal[1] + KmerRCOrVal[2];
 	
-	kvec_pchar * reads_files = reading_file_list(reads_file_list);
+	reads_files = reading_file_list(reads_file_list);
 	for (size_t i=0;i<kv_size(*reads_files);i++) {
 		char * thisFQname = kv_A(*reads_files,i);
 		printf("%ld: %s\n",i,thisFQname);

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include "seqRead.h"
+#include "seqKmer.h"
 #include <assert.h>
 
 #include <stdlib.h>
@@ -9,7 +10,11 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-void* readaFQgz(void *arg);
+pthread_t *tp_enq, *tp_deq;
+// Declaration of thread condition variable
+pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
+// declaring mutex
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 KSEQ_INIT(gzFile, gzread)
 
@@ -30,6 +35,7 @@ void readFQgz(char * fqname) {
 	gzclose(fp);
 }
 
+size_t linecachesize = 4*1024*1024;
 void* readaFQgz(void *arg) {
 	char * fqname = (char *) arg;
 	gzFile fp;
@@ -60,8 +66,7 @@ void* readaFQgz(void *arg) {
 	// __sync_add_and_fetch(&nthreads_exited, 1);
 	return 0;
 }
-
-void*  countaFromIFQ(void *arg) {
+void* countaFromIFQ(void *arg) {
 	uint16_t * KmerFreqArray = (uint16_t *) arg;
 	while (1) {	// NEEDs a signal.
 		char * seqstr = lfqueue_deq_must(IFQseq);	/*Dequeue*/
@@ -70,6 +75,34 @@ void*  countaFromIFQ(void *arg) {
 	}
 	//__sync_add_and_fetch(&nthreads_exited, 1);
 	return 0;
+}
+int nthreads = 4;
+int nthreads_exited = 0;
+void doThreadedIFQ(kvec_pchar * in_reads_files) {
+	size_t filecnt = kv_size(*in_reads_files);
+	tp_enq = malloc(filecnt*sizeof(pthread_t));
+	tp_deq = malloc(nthreads*sizeof(pthread_t));
+	uint16_t * KmerFreqArray = calloc(100,sizeof(uint16_t));
+	for (size_t i=0; i<filecnt; i++) {
+		char * thisFQname = kv_A(*in_reads_files,i);
+		pthread_create(tp_enq + i, NULL, readaFQgz, thisFQname);
+	}
+	for (int i = 0; i < nthreads; i++)
+		pthread_create(tp_deq + i, NULL, countaFromIFQ, KmerFreqArray);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+	for (int i = 0; i < nthreads; i++) {
+		//pthread_detach(tp_deq[i]);
+		pthread_join(tp_deq[i], NULL);
+	}
+	while ( nthreads_exited < nthreads )
+		lfqueue_sleep(10);
+	if(lfqueue_size(IFQseq) != 0){
+		lfqueue_sleep(10);
+	}
+#pragma GCC diagnostic pop
+
 }
 
 
@@ -83,9 +116,7 @@ void running_test(test_function testfn);
 struct timeval  tv1, tv2;
 #define total_put 5000
 #define total_running_loop 10
-int nthreads = 4;
 int one_thread = 1;
-int nthreads_exited = 0;
 lfqueue_t *myq;
 
 #define join_threads \

@@ -3,15 +3,20 @@
 
 #include "klib/kseq.h"
 #include "lfqueue.h"
+#include "Galaxy.h"
+
+void* countaFromIFQ(void *arg);
+void* readaFQgz(void *arg);
 
 /* Make this header file easier to include in C++ code */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void readFQgz(char * fqname);
-
 lfqueue_t *IFQseq;
+void doThreadedIFQ(kvec_pchar * in_reads_files);
+
+void readFQgz(char * fqname);
 
 int testit(void);
 

@@ -4,8 +4,9 @@
 #include <inttypes.h>
 
 #include "klib/kvec.h"
+#include "Galaxy.h"
 
-typedef kvec_t(char*) kvec_pchar;
+//typedef kvec_t(char*) kvec_pchar;
 
 /* Make this header file easier to include in C++ code */
 #ifdef __cplusplus

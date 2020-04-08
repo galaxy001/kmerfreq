@@ -14,7 +14,7 @@ uint64_t pow_integer(int base, int exponent) {
 	return result;
 }
 
-kvec_pchar reads_files;
+//kvec_pchar *reads_files;
 //read file_list into a vector
 kvec_pchar * reading_file_list(char * file_list) {
 	FILE *fp;
@@ -25,7 +25,7 @@ kvec_pchar * reading_file_list(char * file_list) {
 	if (fp == NULL) {
 		err(EX_NOINPUT, "Fail to open input file:[%s]", file_list);
 	}
-	kv_init(reads_files);
+	kv_init(*reads_files);
 	const char *lineEnds = "\n\r";
 	while ((read = getline(&line, &len, fp)) != -1) {
 		//printf("Retrieved line of length %zu :\n", read);
@@ -34,12 +34,12 @@ kvec_pchar * reading_file_list(char * file_list) {
 		//printf("%i\n",spnsz);
 		char *str = malloc(spnsz+1);
 		strncpy(str,line,spnsz);
-		kv_push(char*,reads_files,str);
+		kv_push(char*,*reads_files,str);
 	}
 	if (ferror(fp)) {
 		/* handle error */
 	}
 	free(line);
 	fclose(fp);
-	return &reads_files;
+	return reads_files;
 }

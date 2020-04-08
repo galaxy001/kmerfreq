@@ -1,6 +1,8 @@
 #ifndef __Galaxy_H__
 #define __Galaxy_H__
 
+#include "klib/kvec.h"
+
 /* Make this header file easier to include in C++ code */
 #ifdef __cplusplus
 extern "C" {
@@ -13,7 +15,8 @@ extern "C" {
 
 #define ERRprintf(...) fprintf(stderr, __VA_ARGS__)
 
-
+typedef kvec_t(char*) kvec_pchar;
+kvec_pchar *reads_files;
 
 #ifdef __cplusplus
 }
